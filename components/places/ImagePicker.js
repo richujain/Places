@@ -8,7 +8,7 @@ import {
 import { Colors } from "../../contants/colors";
 import OutlineButton from "../ui/OutlineButton";
 
-export default function ImagePicker() {
+export default function ImagePicker({ OnTakeImage }) {
   const [pickedImage, setPickedImage] = useState();
   const [cameraPermissionInformation, requestPermission] =
     useCameraPermissions();
@@ -22,7 +22,7 @@ export default function ImagePicker() {
     if (cameraPermissionInformation.status === PermissionStatus.DENIED) {
       Alert.alert(
         "Insufficient Permissions!",
-        "You need to grant to use this app."
+        "You need to grant camera permission to use this app."
       );
       return false;
     }
@@ -40,6 +40,7 @@ export default function ImagePicker() {
       quality: 0.5,
     });
     setPickedImage(image.uri);
+    OnTakeImage(image.uri);
   }
 
   let imagePreview = <Text>No image taken yet.</Text>;
@@ -67,9 +68,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: Colors.primary100,
     borderRadius: 4,
+    overflow: "hidden",
   },
   image: {
     width: "100%",
     height: "100%",
+    borderRadius: 4,
   },
 });
