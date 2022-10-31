@@ -4,12 +4,17 @@ import MapView, { Marker } from "react-native-maps";
 
 import IconButton from "../components/ui/IconButton";
 
-export default function Map({ navigation }) {
-  const [selectedLocation, setSelectedLocation] = useState();
+export default function Map({ navigation, route }) {
+  const initialLocation = route.params && {
+    lat: route.params.initialLat,
+    lng: route.params.initialLng,
+  };
+
+  const [selectedLocation, setSelectedLocation] = useState(initialLocation);
 
   const region = {
-    latitude: 37.78,
-    longitude: -122.43,
+    latitude: initialLocation.lat ? initialLocation.lat : 37.78,
+    longitude: initialLocation.lng ? initialLocation.lng : -122.43,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
     // lat and lng defines the center of the map
@@ -17,6 +22,9 @@ export default function Map({ navigation }) {
   };
 
   function selectLocationHandler(event) {
+    if (initialLocation) {
+      return;
+    }
     const lat = event.nativeEvent.coordinate.latitude;
     const lng = event.nativeEvent.coordinate.longitude;
     setSelectedLocation({
@@ -43,6 +51,9 @@ export default function Map({ navigation }) {
 
   // useLayoutEffect runs the command when this component is rendered for the first time.
   useLayoutEffect(() => {
+    if (initialLocation) {
+      return;
+    }
     navigation.setOptions({
       headerRight: ({ tintColor }) => (
         <IconButton
@@ -53,7 +64,7 @@ export default function Map({ navigation }) {
         />
       ),
     });
-  }, [navigation, savePickedLocationHandler]);
+  }, [navigation, savePickedLocationHandler, initialLocation]);
 
   return (
     <MapView
